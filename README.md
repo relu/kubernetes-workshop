@@ -220,8 +220,8 @@ Install using the guide [here](https://helm.sh/docs/intro/install/).
 All commands in this workshop should be run from the repository's base directory (the folder you clone).
 
 ```bash
-git clone https://github.com/relu/kubernetes-workshop-rubyalacluj.git
-cd kubernetes-workshop-rubyalacluj
+git clone https://github.com/relu/kubernetes-workshop.git
+cd kubernetes-workshop
 ```
 
 **Note**: If you received a different repository URL, use that instead. The `cd` command (change directory) navigates into the workshop folder you just cloned. All subsequent commands in this workshop should be run from this directory.
@@ -2371,6 +2371,8 @@ Au revoir!
 ---
 
 ## Additional Resources
+
+**Note**: Portions of this workshop content were enhanced and reviewed with assistance from Claude (Anthropic).
 
 ### Official Documentation
 
