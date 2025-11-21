@@ -43,7 +43,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/relu/example-app-python
           tags: |
-            type=raw,value=latest
+            type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix=,format=short
 
       - name: Build and push Python image
@@ -51,7 +51,7 @@ jobs:
         with:
           context: ./apps/python
           platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.ref == 'refs/heads/master' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -82,7 +82,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/relu/example-app-ruby
           tags: |
-            type=raw,value=latest
+            type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix=,format=short
 
       - name: Build and push Ruby image
@@ -90,7 +90,7 @@ jobs:
         with:
           context: ./apps/ruby
           platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.ref == 'refs/heads/master' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -121,7 +121,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/relu/example-app-go
           tags: |
-            type=raw,value=latest
+            type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix=,format=short
 
       - name: Build and push Go image
@@ -129,7 +129,7 @@ jobs:
         with:
           context: ./apps/go
           platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.ref == 'refs/heads/master' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -160,7 +160,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/relu/example-app-rust
           tags: |
-            type=raw,value=latest
+            type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix=,format=short
 
       - name: Build and push Rust image
