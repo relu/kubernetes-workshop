@@ -1,5 +1,10 @@
 # Kubernetes Introduction Workshop
 
+![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.34-326CE5?logo=kubernetes&logoColor=white)
+
+![Pile of blue lego pieces](https://images.unsplash.com/photo-1646729470883-9602c07b1810?w=1200&h=300&fit=crop&auto=format&q=80)
+<sup>Photo by [Charles Snow](https://unsplash.com/@charles_snow)</sup>
+
 A hands-on, progressive workshop that takes you from Kubernetes basics to advanced deployment concepts. Learn by doing with practical examples and real applications.
 
 ## Table of Contents
@@ -27,7 +32,7 @@ A hands-on, progressive workshop that takes you from Kubernetes basics to advanc
 - [Cleanup](#cleanup)
 - [Additional Resources](#additional-resources)
 
-## What You'll Learn
+## 🎯 What You'll Learn
 
 By the end of this workshop, you will:
 
@@ -43,7 +48,7 @@ By the end of this workshop, you will:
 
 **Estimated time**: 3-4 hours
 
-## Prerequisites
+## ✅ Prerequisites
 
 **Note for beginners**: This workshop uses the command line (Terminal on Mac/Linux, PowerShell or Command Prompt on Windows). If you're new to the command line, don't worry - we'll guide you through each step!
 
@@ -226,7 +231,7 @@ cd kubernetes-workshop
 
 **Note**: If you received a different repository URL, use that instead. The `cd` command (change directory) navigates into the workshop folder you just cloned. All subsequent commands in this workshop should be run from this directory.
 
-## Getting Started
+## 🚀 Getting Started
 
 **Before you begin**: Make sure your container runtime (Colima or Docker Desktop) is running! Check by running `docker ps` in your terminal. If you get an error, go back to the Container Runtime installation section.
 
@@ -334,9 +339,9 @@ kubectl top nodes
 
 You should see CPU and memory usage for your cluster node. If you see an error, wait another minute and try again - metrics take time to collect.
 
-## Workshop Modules
+## 📚 Workshop Modules
 
-### 1. Namespaces - Your Workspace
+### 1. 📁 Namespaces - Your Workspace
 
 **Time**: ~10 minutes
 
@@ -423,7 +428,7 @@ Try creating a second namespace called `workshop-dev` and list all namespaces. W
 
 ---
 
-### 2. Pods - Your First Application
+### 2. 🎁 Pods - Your First Application
 
 **Time**: ~15 minutes
 
@@ -542,7 +547,7 @@ Notice how Kubernetes added many fields to what we defined in `manifests/01-pod.
 
 ---
 
-### 3. Services - Networking Your Apps
+### 3. 🌐 Services - Networking Your Apps
 
 **Time**: ~15 minutes
 
@@ -618,7 +623,7 @@ Now http://localhost:3000 forwards to the service, which proxies to the pod. Thi
 
 ---
 
-### 4. ReplicaSets - Scaling for Resilience
+### 4. 📈 ReplicaSets - Scaling for Resilience
 
 **Time**: ~15 minutes
 
@@ -716,7 +721,7 @@ kubectl scale rs web-app --replicas 3
 
 ---
 
-### 5. Deployments - Managing Updates
+### 5. 🔄 Deployments - Managing Updates
 
 **Time**: ~20 minutes
 
@@ -924,7 +929,7 @@ All changes are applied together in a single rollout.
 
 ---
 
-### 6. Ingress - External Access
+### 6. 🚪 Ingress - External Access
 
 **Time**: ~20 minutes
 
@@ -1450,7 +1455,7 @@ kubectl get pod <pod-name> -o jsonpath='{.status.qosClass}'
 
 ---
 
-### 9. Configuration Management
+### 9. ⚙️ Configuration Management
 
 **Time**: ~25 minutes
 
@@ -1844,7 +1849,7 @@ While kubectl is essential for scripting and automation, Headlamp excels at:
 
 ---
 
-### 11. Helm - Package Management
+### 11. 📦 Helm - Package Management
 
 **Time**: ~30 minutes
 
@@ -2140,7 +2145,7 @@ kubectl get all -l app.kubernetes.io/instance=example-app-ruby
 
 ---
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
 Common issues and their solutions:
 
@@ -2332,7 +2337,7 @@ kubectl run -it --rm debug --image=busybox --restart=Never -- nslookup kubernete
 
 ---
 
-## Cleanup
+## 🧹 Cleanup
 
 When you're finished with the workshop, clean up all resources:
 
@@ -2390,7 +2395,7 @@ Au revoir!
 
 ---
 
-## Additional Resources
+## 📖 Additional Resources
 
 **Note**: Portions of this workshop content were enhanced and reviewed with assistance from Claude (Anthropic).
 
