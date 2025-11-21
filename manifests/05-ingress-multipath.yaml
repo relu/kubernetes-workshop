@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-app
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /ruby
+        pathType: Prefix
+        backend:
+          service:
+            name: web-app-ruby
+            port:
+              name: http
+      - path: /python
+        pathType: Prefix
+        backend:
+          service:
+            name: web-app-python
+            port:
+              name: http
+      - path: /go
+        pathType: Prefix
+        backend:
+          service:
+            name: web-app-go
+            port:
+              name: http
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-app
+            port:
+              name: http

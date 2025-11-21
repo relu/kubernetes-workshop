@@ -1,0 +1,132 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app-python
+  labels:
+    app: web-app-python
+spec:
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: web-app-python
+  template:
+    metadata:
+      labels:
+        app: web-app-python
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/relu/example-app-python
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+              name: http
+          env:
+            - name: NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-app-python
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: web-app-python
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app-go
+  labels:
+    app: web-app-go
+spec:
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: web-app-go
+  template:
+    metadata:
+      labels:
+        app: web-app-go
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/relu/example-app-go
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+              name: http
+          env:
+            - name: NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-app-go
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: web-app-go
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app-ruby
+  labels:
+    app: web-app-ruby
+spec:
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: web-app-ruby
+  template:
+    metadata:
+      labels:
+        app: web-app-ruby
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/relu/example-app-ruby
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+              name: http
+          env:
+            - name: NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-app-ruby
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: web-app-ruby
