@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"runtime"
 	"sync/atomic"
+	"syscall"
+	"time"
 )
 
 const templateStr = `<!DOCTYPE html>
@@ -208,6 +212,35 @@ func main() {
 	}
 
 	http.HandleFunc("/", handler)
-	log.Printf("Go server listening on port %s...", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+
+	server := &http.Server{
+		Addr: ":" + port,
+	}
+
+	// Channel to listen for interrupt or terminate signals
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+
+	// Start server in a goroutine
+	go func() {
+		log.Printf("Go server listening on port %s...", port)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Server error: %v", err)
+		}
+	}()
+
+	// Wait for interrupt signal
+	<-stop
+	log.Println("Shutdown signal received, shutting down gracefully...")
+
+	// Create a deadline for shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Attempt graceful shutdown
+	if err := server.Shutdown(ctx); err != nil {
+		log.Printf("Server forced to shutdown: %v", err)
+	}
+
+	log.Println("Server stopped")
 }

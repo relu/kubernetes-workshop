@@ -1,9 +1,19 @@
 import os
 import sys
+import signal
 import threading
 from flask import Flask, request, render_template_string
 
 app = Flask(__name__)
+
+# Signal handler for graceful shutdown
+def signal_handler(sig, frame):
+    signame = 'SIGINT' if sig == signal.SIGINT else 'SIGTERM'
+    print(f'\n{signame} received, shutting down gracefully...', flush=True)
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 
 # Thread-safe request counter
 request_count = 0

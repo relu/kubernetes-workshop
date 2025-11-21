@@ -4,6 +4,17 @@ require 'socket'
 set :port, ENV['PORT'] || 3000
 set :bind, '0.0.0.0'
 
+# Signal handlers for graceful shutdown
+trap('INT') do
+  puts "\nSIGINT received, shutting down gracefully..."
+  exit(0)
+end
+
+trap('TERM') do
+  puts "\nSIGTERM received, shutting down gracefully..."
+  exit(0)
+end
+
 # Thread-safe request counter
 $request_count = 0
 $request_mutex = Mutex.new
