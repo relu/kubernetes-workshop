@@ -136,7 +136,7 @@ const TEMPLATE: &str = r#"<!DOCTYPE html>
         <div class="info">
             <div class="info-item">
                 <span class="info-label">Version:</span>
-                <span class="info-value">Rust {rust_version}</span>
+                <span class="info-value">{rust_version}</span>
             </div>
             <div class="info-item">
                 <span class="info-label">Request Path:</span>
