@@ -93,7 +93,7 @@ What if we want to edit the resource in place? We can surely do that!
 $ kubectl edit ns workshop
 ```
 
-This will bring up your editor and give you the posibility to edit the
+This will bring up your editor and give you the possibility to edit the
 resource directly. Once saved, it will be applied in kubernetes automatically.
 
 Ok, so now that we have our workspace ready, let's set our current kubectl
@@ -265,7 +265,7 @@ $ kubectl apply -f manifests/04-deployment.yaml
 ```
 
 _NOTE: If you look at its manifest, the deployment looks identical to the
-ReplicaSet, aside from the `kind` atttribute that is. The reason is that
+ReplicaSet, aside from the `kind` attribute that is. The reason is that
 Deployments are controllers for replicasets, they basically work by creating,
 scaling and removing replicasets._
 
@@ -275,7 +275,7 @@ $ kubectl get deployments -o wide
 ```
 
 _NOTE: The `-o wide` argument instructs kubectl to format the output in wide
-mode which will show some extra information dependening on the resource kind
+mode which will show some extra information depending on the resource kind
 being listed._
 
 If we look at the pods again you'll notice nothing really changed, same reason
@@ -358,7 +358,7 @@ $ kubectl rollout undo deployment web-app --to-revision=1
 Now that we have a deployment running for our app we're ready to expose it to
 the external world. In order to do this we'll need to create an Ingress object.
 
-Normally an ingress object maps 1:1 with an external Load Balancer serivce,
+Normally an ingress object maps 1:1 with an external Load Balancer service,
 since we're running locally and not in the cloud we'll need to install an
 ingress controller. To install the nginx ingress controller component run:
 
@@ -445,7 +445,7 @@ Let's try to understand these a bit better:
 - `limits` refers to the maximum amount of CPU and memory a particular pod
   container may consume and it represents a hardly enforced limit, meaning that
   the pod will be throttled on CPU utilizationand can be OOM killed if it
-  exeeds the memory limit.
+  exceeds the memory limit.
 
 ### CPU
 
@@ -506,7 +506,7 @@ We can now see our pods use the three configmaps in three different ways:
 
 If we exec into one of the pod containers we'll be able see the environment
 variables and check the `/tmp/config` directory which should have a `file.txt`
-in it with the contets from our ConfigMap.
+in it with the contents from our ConfigMap.
 
 ### Secrets
 
@@ -583,7 +583,7 @@ In the `helm/` directory you can find an example chart created based on the
 manifests we've worked through until now. Our helm chart also has a dependency
 on `redis`.
 
-Let's instll our first helm release of the `example-app` chart into the
+Let's install our first helm release of the `example-app` chart into the
 cluster:
 
 ```
