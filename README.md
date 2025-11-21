@@ -32,10 +32,6 @@ Follow [the guide](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 
 Install using the guide [here](https://github.com/helm/helm#install)
 
-### stern
-
-Install from [here](https://github.com/stern/stern)
-
 ## Create a namespace
 
 A namespace represents a means of partitioning a kubernetes cluster. Most
@@ -115,9 +111,9 @@ should be able to spot three small example applications built in three
 different programming languages: python, go and of course, ruby.
 We'll use these app images:
 
-- aurelcanciu/example-app-python
-- aurelcanciu/example-app-ruby
-- aurelcanciu/example-app-go
+- ghcr.io/relu/example-app-python
+- ghcr.io/relu/example-app-ruby
+- ghcr.io/relu/example-app-go
 
 _NOTE: Feel free to inspect these, change them and build your own images._
 
@@ -288,7 +284,7 @@ selector matches the existing pods which prevent creating new ones.
 Now let's make a change to our deployment so that an update takes place:
 
 ```
-$ kubectl set image deployment/web-app app=aurelcanciu/example-app-python
+$ kubectl set image deployment/web-app app=ghcr.io/relu/example-app-python
 ```
 
 Now, if we look at the pods, we'll see that the rolling update process started
@@ -316,7 +312,7 @@ $ kubectl scale deployment web-app --replicas 5
 Let's update the deployment once again with the go image:
 
 ```
-$ kubectl set image deployment/web-app app=aurelcanciu/example-app-go
+$ kubectl set image deployment/web-app app=ghcr.io/relu/example-app-go
 ```
 
 _NOTE: We're updating the image but we can actually update just the image tag
@@ -534,8 +530,6 @@ logs` subcommand.
 $ kubectl logs -f -l app=web-app
 ```
 
-For better results, you can use `stern` :)
-
 ## Kubernetes dashboard
 
 Install the kubernetes dashboard via manifest:
@@ -587,7 +581,7 @@ Let's install our first helm release of the `example-app` chart into the
 cluster:
 
 ```
-$ helm install example-app-ruby ./helm/example-app --set image.repository=aurelcanciu/example-app-ruby --wait
+$ helm install example-app-ruby ./helm/example-app --set image.repository=ghcr.io/relu/example-app-ruby --wait
 ```
 
 Now we can see that our release was created by listing the available releases:
@@ -611,8 +605,8 @@ a new ingress object.
 Let's create releases for our other apps:
 
 ```
-$ helm install example-app-python ./helm/example-app --set image.repository=aurelcanciu/example-app-python -f ./helm/values-python.yaml -f ./helm/overrides.yaml --wait
-$ helm install example-app-go ./helm/example-app --set image.repository=aurelcanciu/example-app-go -f ./helm/values-go.yaml -f ./helm/overrides.yaml --wait
+$ helm install example-app-python ./helm/example-app --set image.repository=ghcr.io/relu/example-app-python -f ./helm/values-python.yaml -f ./helm/overrides.yaml --wait
+$ helm install example-app-go ./helm/example-app --set image.repository=ghcr.io/relu/example-app-go -f ./helm/values-go.yaml -f ./helm/overrides.yaml --wait
 ```
 
 As you can see, we've used the same chart to create two new releases with

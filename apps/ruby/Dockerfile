@@ -1,4 +1,4 @@
-FROM ruby:3.2-alpine
+FROM docker.io/ruby:3.4-alpine
 
 COPY . /app
 WORKDIR /app

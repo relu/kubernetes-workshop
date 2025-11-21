@@ -8,7 +8,7 @@ metadata:
 spec:
   containers:
     - name: app
-      image: aurelcanciu/example-app-ruby
+      image: ghcr.io/relu/example-app-ruby
       ports:
         - containerPort: 3000
           protocol: TCP
