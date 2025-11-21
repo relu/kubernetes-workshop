@@ -130,3 +130,47 @@ spec:
       name: http
   selector:
     app: web-app-ruby
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app-rust
+  labels:
+    app: web-app-rust
+spec:
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: web-app-rust
+  template:
+    metadata:
+      labels:
+        app: web-app-rust
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/relu/example-app-rust
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+              name: http
+          env:
+            - name: NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-app-rust
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: web-app-rust

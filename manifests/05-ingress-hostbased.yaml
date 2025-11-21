@@ -34,6 +34,16 @@ spec:
             name: web-app-go
             port:
               name: http
+  - host: rust.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-app-rust
+            port:
+              name: http
   - host: app.local
     http:
       paths:

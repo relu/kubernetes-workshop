@@ -27,6 +27,13 @@ spec:
             name: web-app-go
             port:
               name: http
+      - path: /rust
+        pathType: Prefix
+        backend:
+          service:
+            name: web-app-rust
+            port:
+              name: http
       - path: /
         pathType: Prefix
         backend:

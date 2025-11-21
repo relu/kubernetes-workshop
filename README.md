@@ -429,11 +429,12 @@ Try creating a second namespace called `workshop-dev` and list all namespaces. W
 
 Pods are the smallest deployable units in Kubernetes. A pod represents a single instance of a running process and can contain one or more containers that share networking and storage. In most cases, you'll run one container per pod.
 
-For this workshop, we'll use three example applications written in different languages. Each application is packaged as a **container image** (think of it as a ready-to-run package containing the application and everything it needs).
+For this workshop, we'll use four example applications written in different languages. Each application is packaged as a **container image** (think of it as a ready-to-run package containing the application and everything it needs).
 
 - `ghcr.io/relu/example-app-python` - Python web application
 - `ghcr.io/relu/example-app-ruby` - Ruby web application
 - `ghcr.io/relu/example-app-go` - Go web application
+- `ghcr.io/relu/example-app-rust` - Rust web application
 
 The format `ghcr.io/relu/example-app-ruby` is a container image reference where:
 - `ghcr.io` is the registry (where the image is stored, like Docker Hub)
@@ -443,7 +444,7 @@ The format `ghcr.io/relu/example-app-ruby` is a container image reference where:
 
 **What the applications display**:
 When you access these applications, they show:
-- **Version**: The runtime version (Ruby/Python/Go version)
+- **Version**: The runtime version (Ruby/Python/Go/Rust version)
 - **Request Path**: The current URL path being accessed
 - **Hostname**: The pod's hostname (which is the pod name in Kubernetes)
 - **Request Count**: A counter that increments with each request to that specific pod
@@ -499,7 +500,7 @@ kubectl port-forward pod/web-app 3000
 
 Open http://localhost:3000 in your browser to see the application running.
 
-**Expected output**: You should see a simple web page showing which application is running (Ruby, Python, or Go).
+**Expected output**: You should see a simple web page showing which application is running (Ruby, Python, Go, or Rust).
 
 Press `Ctrl+C` to stop the port-forward when you're done.
 
@@ -1019,24 +1020,24 @@ All should work (though your application might return 404 for undefined routes).
 
 #### Advanced: Path-based routing
 
-You can route different paths to different services. Let's deploy our three example applications (Ruby, Python, Go) as separate deployments, each with their own service, and route to them based on URL paths.
+You can route different paths to different services. Let's deploy our four example applications (Ruby, Python, Go, Rust) as separate deployments, each with their own service, and route to them based on URL paths.
 
-**Note**: The manifest creates three new deployments (web-app-ruby, web-app-python, web-app-go) with corresponding services. Your existing `web-app` deployment and service will remain unchanged and will handle the root path (`/`).
+**Note**: The manifest creates four new deployments (web-app-ruby, web-app-python, web-app-go, web-app-rust) with corresponding services. Your existing `web-app` deployment and service will remain unchanged and will handle the root path (`/`).
 
-First, deploy the three applications with their own services:
+First, deploy the four applications with their own services:
 
 ```bash
 kubectl apply -f manifests/05-multiapp-deployments.yaml
 ```
 
 This creates:
-- 3 Deployments (web-app-ruby, web-app-python, web-app-go)
-- 3 Services (web-app-ruby, web-app-python, web-app-go)
+- 4 Deployments (web-app-ruby, web-app-python, web-app-go, web-app-rust)
+- 4 Services (web-app-ruby, web-app-python, web-app-go, web-app-rust)
 
 Wait for all pods to be ready:
 
 ```bash
-kubectl get pods -l 'app in (web-app-ruby,web-app-python,web-app-go)'
+kubectl get pods -l 'app in (web-app-ruby,web-app-python,web-app-go,web-app-rust)'
 ```
 
 Check all services:
@@ -1045,7 +1046,7 @@ Check all services:
 kubectl get svc
 ```
 
-You should see four services: `web-app` (original), `web-app-ruby`, `web-app-python`, and `web-app-go`.
+You should see five services: `web-app` (original), `web-app-ruby`, `web-app-python`, `web-app-go`, and `web-app-rust`.
 
 Now update the Ingress to route based on paths:
 
@@ -1067,6 +1068,7 @@ Test the different paths:
 curl http://localhost:30080/ruby
 curl http://localhost:30080/python
 curl http://localhost:30080/go
+curl http://localhost:30080/rust
 curl http://localhost:30080/
 ```
 
@@ -1094,6 +1096,7 @@ Add these lines at the end of the file:
 127.0.0.1 ruby.local
 127.0.0.1 python.local
 127.0.0.1 go.local
+127.0.0.1 rust.local
 127.0.0.1 app.local
 ```
 
@@ -1105,6 +1108,7 @@ Save and exit (in nano: `Ctrl+O`, `Enter`, then `Ctrl+X`).
 127.0.0.1 ruby.local
 127.0.0.1 python.local
 127.0.0.1 go.local
+127.0.0.1 rust.local
 127.0.0.1 app.local
 ```
 
@@ -1120,7 +1124,7 @@ kubectl apply -f manifests/05-ingress-hostbased.yaml
 kubectl describe ingress web-app
 ```
 
-You should see four host rules instead of path rules.
+You should see five host rules instead of path rules.
 
 **Step 4: Test the host-based routing**
 
@@ -1128,6 +1132,7 @@ You should see four host rules instead of path rules.
 curl http://ruby.local:30080/
 curl http://python.local:30080/
 curl http://go.local:30080/
+curl http://rust.local:30080/
 curl http://app.local:30080/
 ```
 
@@ -1990,7 +1995,7 @@ helm upgrade example-app-ruby ./helm/example-app \
   --set ingress.enabled=true
 ```
 
-#### Install releases for Python and Go apps
+#### Install releases for Python, Go, and Rust apps
 
 Use the same chart to deploy the other applications:
 
@@ -2004,6 +2009,12 @@ helm install example-app-python ./helm/example-app \
 helm install example-app-go ./helm/example-app \
   --set image.repository=ghcr.io/relu/example-app-go \
   -f ./helm/values-go.yaml \
+  -f ./helm/overrides.yaml \
+  --wait
+
+helm install example-app-rust ./helm/example-app \
+  --set image.repository=ghcr.io/relu/example-app-rust \
+  -f ./helm/values-rust.yaml \
   -f ./helm/overrides.yaml \
   --wait
 ```
