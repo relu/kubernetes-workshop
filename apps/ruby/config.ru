@@ -1,6 +1,2 @@
-require 'rack'
-
-run do |env|
-  name = ENV.fetch('NAME', __FILE__)
-  [200, {'content-type' => 'text/html'}, ["This is #{name}"]]
-end
+require './app'
+run Sinatra::Application

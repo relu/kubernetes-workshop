@@ -1,20 +1,20 @@
-import os
-import sys
-import threading
-from flask import Flask, request, render_template_string
+require 'sinatra'
+require 'socket'
 
-app = Flask(__name__)
+set :port, ENV['PORT'] || 3000
+set :bind, '0.0.0.0'
 
 # Thread-safe request counter
-request_count = 0
-request_lock = threading.Lock()
+$request_count = 0
+$request_mutex = Mutex.new
 
-TEMPLATE = """<!DOCTYPE html>
+TEMPLATE = <<-HTML
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kubernetes Workshop - Python App</title>
+    <title>Kubernetes Workshop - Ruby App</title>
     <style>
         * {
             margin: 0;
@@ -54,7 +54,7 @@ TEMPLATE = """<!DOCTYPE html>
         }
 
         .language {
-            color: #3776AB;
+            color: #CC342D;
             font-weight: bold;
         }
 
@@ -124,28 +124,28 @@ TEMPLATE = """<!DOCTYPE html>
 <body>
     <div class="container">
         <div class="logo">
-            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ruby/ruby-original.svg" alt="Ruby" />
         </div>
 
-        <h1>Hello from <span class="language">Python</span>!</h1>
-        <p class="subtitle">{{ subtitle }}</p>
+        <h1>Hello from <span class="language">Ruby</span>!</h1>
+        <p class="subtitle"><%= @subtitle %></p>
 
         <div class="info">
             <div class="info-item">
                 <span class="info-label">Version:</span>
-                <span class="info-value">{{ python_version }}</span>
+                <span class="info-value"><%= @ruby_version %></span>
             </div>
             <div class="info-item">
                 <span class="info-label">Request Path:</span>
-                <span class="info-value">{{ path }}</span>
+                <span class="info-value"><%= @path %></span>
             </div>
             <div class="info-item">
                 <span class="info-label">Hostname:</span>
-                <span class="info-value">{{ hostname }}</span>
+                <span class="info-value"><%= @hostname %></span>
             </div>
             <div class="info-item">
                 <span class="info-label">Request Count:</span>
-                <span class="info-value">{{ request_count }}</span>
+                <span class="info-value"><%= @request_count %></span>
             </div>
         </div>
 
@@ -157,33 +157,20 @@ TEMPLATE = """<!DOCTYPE html>
         </div>
     </div>
 </body>
-</html>"""
+</html>
+HTML
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def index(path):
-    global request_count
+get '/*' do
+  $request_mutex.synchronize do
+    $request_count += 1
+  end
 
-    with request_lock:
-        request_count += 1
-        current_count = request_count
+  @pod_name = ENV.fetch('NAME', 'unknown')
+  @ruby_version = RUBY_VERSION
+  @path = request.path
+  @hostname = Socket.gethostname
+  @subtitle = ENV.fetch('SUBTITLE', 'Kubernetes Workshop Example Application')
+  @request_count = $request_count
 
-    pod_name = os.environ.get('NAME', 'unknown')
-    python_version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-    hostname = os.uname().nodename
-    request_path = request.path
-    subtitle = os.environ.get('SUBTITLE', 'Kubernetes Workshop Example Application')
-
-    return render_template_string(
-        TEMPLATE,
-        pod_name=pod_name,
-        python_version=python_version,
-        path=request_path,
-        hostname=hostname,
-        subtitle=subtitle,
-        request_count=current_count
-    )
-
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 3000))
-    app.run(host='0.0.0.0', port=port)
+  erb TEMPLATE
+end

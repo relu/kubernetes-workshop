@@ -1,10 +1,11 @@
 FROM docker.io/ruby:3.4-alpine
 
-COPY . /app
+COPY Gemfile /app/
 WORKDIR /app
+RUN bundle install
 
-RUN gem install rack rackup webrick
+COPY app.rb config.ru /app/
 
 EXPOSE 3000
 
-CMD ["rackup", "--port", "3000", "--host", "0.0.0.0"]
+CMD ["rackup", "--host", "0.0.0.0", "--port", "3000"]

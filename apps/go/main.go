@@ -1,20 +1,20 @@
-import os
-import sys
-import threading
-from flask import Flask, request, render_template_string
+package main
 
-app = Flask(__name__)
+import (
+	"html/template"
+	"log"
+	"net/http"
+	"os"
+	"runtime"
+	"sync/atomic"
+)
 
-# Thread-safe request counter
-request_count = 0
-request_lock = threading.Lock()
-
-TEMPLATE = """<!DOCTYPE html>
+const templateStr = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kubernetes Workshop - Python App</title>
+    <title>Kubernetes Workshop - Go App</title>
     <style>
         * {
             margin: 0;
@@ -54,7 +54,7 @@ TEMPLATE = """<!DOCTYPE html>
         }
 
         .language {
-            color: #3776AB;
+            color: #00ADD8;
             font-weight: bold;
         }
 
@@ -124,28 +124,28 @@ TEMPLATE = """<!DOCTYPE html>
 <body>
     <div class="container">
         <div class="logo">
-            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" />
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg" alt="Go" />
         </div>
 
-        <h1>Hello from <span class="language">Python</span>!</h1>
-        <p class="subtitle">{{ subtitle }}</p>
+        <h1>Hello from <span class="language">Go</span>!</h1>
+        <p class="subtitle">{{.Subtitle}}</p>
 
         <div class="info">
             <div class="info-item">
                 <span class="info-label">Version:</span>
-                <span class="info-value">{{ python_version }}</span>
+                <span class="info-value">{{.GoVersion}}</span>
             </div>
             <div class="info-item">
                 <span class="info-label">Request Path:</span>
-                <span class="info-value">{{ path }}</span>
+                <span class="info-value">{{.Path}}</span>
             </div>
             <div class="info-item">
                 <span class="info-label">Hostname:</span>
-                <span class="info-value">{{ hostname }}</span>
+                <span class="info-value">{{.Hostname}}</span>
             </div>
             <div class="info-item">
                 <span class="info-label">Request Count:</span>
-                <span class="info-value">{{ request_count }}</span>
+                <span class="info-value">{{.RequestCount}}</span>
             </div>
         </div>
 
@@ -157,33 +157,57 @@ TEMPLATE = """<!DOCTYPE html>
         </div>
     </div>
 </body>
-</html>"""
+</html>`
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def index(path):
-    global request_count
+var tmpl = template.Must(template.New("index").Parse(templateStr))
+var requestCount uint64
 
-    with request_lock:
-        request_count += 1
-        current_count = request_count
+type PageData struct {
+	PodName      string
+	GoVersion    string
+	Path         string
+	Hostname     string
+	Subtitle     string
+	RequestCount uint64
+}
 
-    pod_name = os.environ.get('NAME', 'unknown')
-    python_version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-    hostname = os.uname().nodename
-    request_path = request.path
-    subtitle = os.environ.get('SUBTITLE', 'Kubernetes Workshop Example Application')
+func handler(w http.ResponseWriter, r *http.Request) {
+	count := atomic.AddUint64(&requestCount, 1)
 
-    return render_template_string(
-        TEMPLATE,
-        pod_name=pod_name,
-        python_version=python_version,
-        path=request_path,
-        hostname=hostname,
-        subtitle=subtitle,
-        request_count=current_count
-    )
+	podName := os.Getenv("NAME")
+	if podName == "" {
+		podName = "unknown"
+	}
 
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 3000))
-    app.run(host='0.0.0.0', port=port)
+	subtitle := os.Getenv("SUBTITLE")
+	if subtitle == "" {
+		subtitle = "Kubernetes Workshop Example Application"
+	}
+
+	hostname, _ := os.Hostname()
+
+	data := PageData{
+		PodName:      podName,
+		GoVersion:    runtime.Version(),
+		Path:         r.URL.Path,
+		Hostname:     hostname,
+		Subtitle:     subtitle,
+		RequestCount: count,
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	tmpl.Execute(w, data)
+
+	log.Printf("%s - %s %s", r.RemoteAddr, r.Method, r.URL.Path)
+}
+
+func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	http.HandleFunc("/", handler)
+	log.Printf("Go server listening on port %s...", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
+}

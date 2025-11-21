@@ -5,7 +5,7 @@ WORKDIR /build
 
 EXPOSE 3000
 
-RUN CGO_ENABLED=0 go build ./app.go
+RUN CGO_ENABLED=0 go build -o app ./main.go
 
 FROM gcr.io/distroless/static
 
