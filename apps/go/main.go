@@ -19,6 +19,7 @@ const templateStr = `<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kubernetes Workshop - Go App</title>
+    <link rel="icon" type="image/svg+xml" href="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg">
     <style>
         * {
             margin: 0;

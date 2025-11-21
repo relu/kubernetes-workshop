@@ -25,6 +25,7 @@ TEMPLATE = """<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kubernetes Workshop - Python App</title>
+    <link rel="icon" type="image/svg+xml" href="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg">
     <style>
         * {
             margin: 0;
