@@ -441,6 +441,15 @@ The format `ghcr.io/relu/example-app-ruby` is a container image reference where:
 
 **Note**: These applications are in the `apps/` directory of this repository. Feel free to explore the code and build your own images.
 
+**What the applications display**:
+When you access these applications, they show:
+- **Version**: The runtime version (Ruby/Python/Go version)
+- **Request Path**: The current URL path being accessed
+- **Hostname**: The pod's hostname (which is the pod name in Kubernetes)
+- **Request Count**: A counter that increments with each request to that specific pod
+
+You can customize the subtitle text by setting the `SUBTITLE` environment variable (defaults to "Kubernetes Workshop Example Application").
+
 #### Create your first pod
 
 ```bash
