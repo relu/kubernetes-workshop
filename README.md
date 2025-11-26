@@ -62,6 +62,12 @@ Kubernetes (often abbreviated as "K8s") is a system for automating the deploymen
 - **Pod**: The smallest unit in Kubernetes - usually runs one container
 - **Manifest**: A YAML file that describes what you want Kubernetes to create
 
+**📚 Learn more about Kubernetes**:
+- [Kubernetes Overview](https://kubernetes.io/docs/concepts/overview/) - What is Kubernetes and why use it
+- [Kubernetes Components](https://kubernetes.io/docs/concepts/overview/components/) - Architecture and control plane
+- [Understanding Kubernetes Objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/) - Core concepts
+- [What is a Container?](https://kubernetes.io/docs/concepts/containers/) - Container basics
+
 ### Required Tools
 
 Install the following tools on your machine before starting the workshop. You'll need all of them, and they must be installed in this order.
@@ -260,6 +266,11 @@ kubectl <action> <resource-type> <resource-name> [options]
 
 **Line continuation**: When you see a backslash `\` at the end of a line, it means the command continues on the next line. You can type it all on one line without the `\` if you prefer.
 
+**📚 Learn more about kubectl**:
+- [kubectl Overview](https://kubernetes.io/docs/reference/kubectl/) - Official reference
+- [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/) - Common commands
+- [kubectl Command Reference](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands) - Complete command list
+
 ### Set Up Your Local Cluster
 
 Create a local Kubernetes cluster using Kind with the configuration that enables ingress support:
@@ -356,6 +367,8 @@ A namespace is a virtual partition within your Kubernetes cluster. Think of it a
 - Most Kubernetes resources live in a namespace (pods, services, deployments, etc.)
 - Some resources are cluster-wide and don't belong to a namespace (like nodes or the namespace itself)
 
+**📚 Learn more**: [Kubernetes Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/)
+
 We'll create a dedicated namespace called `workshop` for this tutorial. When we're done, deleting this namespace will clean up everything we created.
 
 #### Create the namespace
@@ -434,6 +447,18 @@ Try creating a second namespace called `workshop-dev` and list all namespaces. W
 
 Pods are the smallest deployable units in Kubernetes. A pod represents a single instance of a running process and can contain one or more containers that share networking and storage. In most cases, you'll run one container per pod.
 
+**Understanding pods**:
+- Each pod gets its own IP address
+- Containers in a pod share the same network namespace (can communicate via localhost)
+- A special "pause" container (infrastructure container) holds the network namespace for the pod
+- Pods are designed to be ephemeral and immutable - you replace them rather than modify them
+
+**📚 Learn more about pods**:
+- [Pod Concepts](https://kubernetes.io/docs/concepts/workloads/pods/) - Official overview
+- [Pod Lifecycle](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/) - Pod phases and container states
+- [Init Containers](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) - Specialized containers that run before app containers
+- [Sidecar Containers](https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/) - Multi-container pod patterns
+
 For this workshop, we'll use four example applications written in different languages. Each application is packaged as a **container image** (think of it as a ready-to-run package containing the application and everything it needs).
 
 - `ghcr.io/relu/example-app-python` - Python web application
@@ -446,6 +471,11 @@ The format `ghcr.io/relu/example-app-ruby` is a container image reference where:
 - `relu/example-app-ruby` is the image name
 
 **Note**: These applications are in the `apps/` directory of this repository. Feel free to explore the code and build your own images.
+
+**📚 Learn more about container images**:
+- [Container Images](https://kubernetes.io/docs/concepts/containers/images/) - How Kubernetes uses images
+- [Image Pull Policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy) - When images are pulled
+- [Container Registries](https://kubernetes.io/docs/concepts/containers/images/#image-names) - Where images are stored
 
 **What the applications display**:
 When you access these applications, they show:
@@ -553,6 +583,11 @@ Notice how Kubernetes added many fields to what we defined in `manifests/01-pod.
 
 Pods are ephemeral - they can be deleted and recreated with new IP addresses. Services provide stable networking for pods using label selectors to automatically discover and route traffic to matching pods.
 
+**📚 Learn more about services**:
+- [Service Concepts](https://kubernetes.io/docs/concepts/services-networking/service/) - Official service documentation
+- [Connecting Applications with Services](https://kubernetes.io/docs/tutorials/services/connect-applications-service/) - Step-by-step tutorial
+- [DNS for Services and Pods](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/) - How service discovery works
+
 #### Create a service
 
 ```bash
@@ -628,6 +663,10 @@ Now http://localhost:3000 forwards to the service, which proxies to the pod. Thi
 **Time**: ~15 minutes
 
 Running a single pod has limitations - if it crashes or gets deleted, your application goes down. ReplicaSets solve this by maintaining a specified number of identical pod replicas running at all times.
+
+**📚 Learn more about ReplicaSets**:
+- [ReplicaSet Concepts](https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/) - Official documentation
+- [Labels and Selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) - How Kubernetes uses labels to organize resources
 
 #### Create a ReplicaSet
 
@@ -732,6 +771,11 @@ A Deployment is a higher-level controller that manages ReplicaSets. It provides:
 - Rollback capabilities
 - Revision history
 - Pausing and resuming rollouts
+
+**📚 Learn more about Deployments**:
+- [Deployment Concepts](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) - Official documentation
+- [Performing a Rolling Update](https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/) - Interactive tutorial
+- [Deployment Strategies](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) - Rolling update vs recreate
 
 #### Create a deployment
 
@@ -936,6 +980,11 @@ All changes are applied together in a single rollout.
 So far, we've used port-forwarding to access our applications locally. In production, you need a proper way to route external traffic to your services. Ingress provides HTTP and HTTPS routing from outside the cluster to services within the cluster.
 
 An Ingress requires an **Ingress Controller** - a component that watches for Ingress resources and configures a reverse proxy accordingly. We'll use **Traefik**, a modern, cloud-native ingress controller.
+
+**📚 Learn more about Ingress**:
+- [Ingress Concepts](https://kubernetes.io/docs/concepts/services-networking/ingress/) - Official documentation
+- [Ingress Controllers](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) - Available ingress controller options
+- [Traefik Documentation](https://doc.traefik.io/traefik/providers/kubernetes-ingress/) - Traefik as a Kubernetes ingress controller
 
 #### Install Traefik Ingress Controller
 
@@ -1175,6 +1224,11 @@ kubectl apply -f manifests/05-ingress-multipath.yaml
 
 Kubernetes provides built-in access to container logs through kubectl. This is essential for debugging and monitoring applications.
 
+**📚 Learn more about logging**:
+- [Logging Architecture](https://kubernetes.io/docs/concepts/cluster-administration/logging/) - How Kubernetes handles logs
+- [Application Introspection and Debugging](https://kubernetes.io/docs/tasks/debug/debug-application/) - Debugging techniques
+- [Logging Best Practices](https://kubernetes.io/docs/concepts/cluster-administration/logging/#logging-at-the-node-level) - Node-level logging patterns
+
 #### View logs from all pods
 
 ```bash
@@ -1310,6 +1364,12 @@ For production systems, deploy a centralized logging solution like:
 **Time**: ~20 minutes
 
 Kubernetes needs to know how much CPU and memory each pod needs to make smart scheduling decisions and prevent resource exhaustion. This section covers resource requests and limits.
+
+**📚 Learn more about resource management**:
+- [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) - Official documentation
+- [Quality of Service Classes](https://kubernetes.io/docs/concepts/workloads/pods/pod-qos/) - QoS classes explained
+- [Resource Quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/) - Limiting resource usage per namespace
+- [Understanding Kubernetes CPU Throttling](https://www.datadoghq.com/blog/kubernetes-cpu-requests-limits/) - Deep dive into CPU limits debate
 
 #### View resource usage
 
@@ -1460,6 +1520,12 @@ kubectl get pod <pod-name> -o jsonpath='{.status.qosClass}'
 **Time**: ~25 minutes
 
 Applications need configuration - database URLs, API keys, feature flags, etc. Hard-coding these values in your container images is inflexible and insecure. Kubernetes provides ConfigMaps for general configuration and Secrets for sensitive data.
+
+**📚 Learn more about configuration management**:
+- [ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/) - Official ConfigMap documentation
+- [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/) - Official Secrets documentation
+- [Good Practices for Kubernetes Secrets](https://kubernetes.io/docs/concepts/security/secrets-good-practices/) - Security best practices
+- [Encrypting Secret Data at Rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/) - How to enable encryption
 
 #### Apply the configuration manifest
 
@@ -1690,6 +1756,10 @@ Headlamp is a modern, lightweight Kubernetes UI that runs on your local machine.
 - Great for development workflows
 - Open source and actively maintained
 
+**📚 Learn more about Headlamp**:
+- [Headlamp Documentation](https://headlamp.dev/docs/) - Official documentation
+- [Headlamp GitHub](https://github.com/headlamp-k8s/headlamp) - Source code and issues
+
 #### Install Headlamp
 
 **On Mac (using Homebrew)**:
@@ -1860,6 +1930,12 @@ Helm is the package manager for Kubernetes. It allows you to define, install, an
 - **Versioning**: Track and rollback application releases
 - **Dependencies**: Charts can depend on other charts
 - **Sharing**: Publish and use community charts
+
+**📚 Learn more about Helm**:
+- [Helm Documentation](https://helm.sh/docs/) - Official Helm documentation
+- [Helm Chart Best Practices](https://helm.sh/docs/chart_best_practices/) - Creating better charts
+- [Helm Chart Template Guide](https://helm.sh/docs/chart_template_guide/) - Templating reference
+- [Artifact Hub](https://artifacthub.io/) - Discover and share Helm charts
 
 #### Helm concepts
 
