@@ -330,8 +330,9 @@ helm repo update
 # Install metrics-server in the kube-system namespace
 helm install metrics-server metrics-server/metrics-server \
   -n kube-system \
-  --set args[0]=--kubelet-insecure-tls \
-  --set args[1]=--metric-resolution=10s
+  --set 'args[0]=--kubelet-insecure-tls' \
+  --set 'args[1]=--metric-resolution=10s' \
+  --set 'args[2]=--kubelet-request-timeout=5s'
 ```
 
 **Note**: The `--kubelet-insecure-tls` flag is needed for local development with Kind. The `--metric-resolution=10s` flag makes metrics-server scrape more frequently (every 10 seconds instead of the default 60 seconds), giving you faster feedback during the workshop. In production, the default 60s is usually sufficient.
