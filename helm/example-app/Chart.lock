@@ -1,6 +1,6 @@
 dependencies:
-- name: redis
-  repository: https://kubernetes-charts.storage.googleapis.com
-  version: 10.2.1
-digest: sha256:91b827d6eaedd91b31651429136bb72c00f4a91dbe1b06568b0c68ad021a8f1f
-generated: "2019-12-06T20:12:49.629668632+02:00"
+- name: valkey
+  repository: https://valkey.io/valkey-helm/
+  version: 0.8.1
+digest: sha256:47270e135af265c7dc34ec62f6c95560804099f14d44524e5b7ce21039759af5
+generated: "2025-11-27T07:11:13.775401547+01:00"

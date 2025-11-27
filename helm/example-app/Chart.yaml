@@ -21,6 +21,6 @@ version: 0.1.0
 appVersion: latest
 
 dependencies:
-  - name: redis
-    version: ^10
-    repository: '@stable'
+  - name: valkey
+    version: ^0
+    repository: https://valkey.io/valkey-helm/

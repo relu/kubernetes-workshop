@@ -1347,7 +1347,7 @@ You should see HTTP request logs appearing in Terminal 1 from different pods.
 - No advanced querying or analysis
 
 For production systems, deploy a centralized logging solution like:
-- **ELK Stack** (Elasticsearch, Logstash, Kibana)
+- **Logstash and OpenSearch Stack**
 - **Grafana Loki** (lightweight, Prometheus-like)
 - **Fluentd** + backend of choice
 - Cloud provider solutions (CloudWatch Logs, Stackdriver, etc.)
@@ -1964,7 +1964,7 @@ example-app/
 │   ├── service.yaml
 │   ├── ingress.yaml
 │   └── _helpers.tpl   # Template helpers and functions
-└── charts/            # Dependent charts (e.g., redis)
+└── charts/            # Dependent charts (e.g., valkey)
 ```
 
 #### View the chart metadata
@@ -1973,7 +1973,7 @@ example-app/
 cat helm/example-app/Chart.yaml
 ```
 
-This shows the chart name, version, description, and dependencies (like Redis).
+This shows the chart name, version, description, and dependencies (like Valkey).
 
 #### View default values
 
@@ -2147,7 +2147,7 @@ This outputs the rendered Kubernetes manifests without installing anything. Usef
 
 #### Chart dependencies
 
-Our chart has a dependency on Redis (see `Chart.yaml`). To manage dependencies:
+Our chart has a dependency on Valkey (see `Chart.yaml`). To manage dependencies:
 
 ```bash
 # Update dependencies (downloads dependent charts)
@@ -2172,20 +2172,20 @@ helm repo list
 Add a repository:
 
 ```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add valkey https://valkey.io/valkey-helm/
 helm repo update
 ```
 
 Search for charts:
 
 ```bash
-helm search repo redis
+helm search repo valkey
 ```
 
 Install a chart from a repository:
 
 ```bash
-helm install my-redis bitnami/redis --namespace workshop
+helm install my-valkey valkey/valkey --namespace workshop
 ```
 
 #### Uninstall a release
