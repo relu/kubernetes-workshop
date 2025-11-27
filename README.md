@@ -802,9 +802,8 @@ kubectl get deployments -o wide
 kubectl get rs
 ```
 
-You'll now see two ReplicaSets:
-1. The old one we created directly (scaled to 0)
-2. A new one created by the Deployment (with 3 replicas)
+Our previously created ReplicaSet has now been "adopted" by the Deployment.
+
 
 ```bash
 kubectl get pod
