@@ -172,6 +172,10 @@ TEMPLATE = <<-HTML
 </html>
 HTML
 
+configure do
+  set :host_authorization, permitted_hosts: []
+end
+
 get '/*' do
   $request_mutex.synchronize do
     $request_count += 1
