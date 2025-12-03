@@ -1764,7 +1764,7 @@ Headlamp is a modern, lightweight Kubernetes UI that runs on your local machine.
 
 **On Mac (using Homebrew)**:
 ```bash
-brew install headlamp
+brew install --cask --no-quarantine headlamp
 ```
 
 **On Linux (using package managers)**:
