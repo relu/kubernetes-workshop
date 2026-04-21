@@ -1,6 +1,6 @@
 # Kubernetes Introduction Workshop
 
-![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.34-326CE5?logo=kubernetes&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.35-326CE5?logo=kubernetes&logoColor=white)
 
 ![Pile of blue lego pieces](https://images.unsplash.com/photo-1646729470883-9602c07b1810?w=1200&h=300&fit=crop&auto=format&q=80)
 <sup>Photo by [Charles Snow](https://unsplash.com/@charles_snow)</sup>
@@ -289,7 +289,7 @@ The configuration includes port mappings (30080, 30443) that allow external traf
 **What to expect**: The cluster creation takes 1-2 minutes. You'll see output like:
 ```
 Creating cluster "workshop" ...
- ✓ Ensuring node image (kindest/node:v1.27.3) 🖼
+ ✓ Ensuring node image (kindest/node:v1.35.0) 🖼
  ✓ Preparing nodes 📦
  ✓ Writing configuration 📜
  ✓ Starting control-plane 🕹️
