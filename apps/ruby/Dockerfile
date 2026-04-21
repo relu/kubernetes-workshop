@@ -1,4 +1,4 @@
-FROM docker.io/ruby:3.4-alpine
+FROM docker.io/ruby:4.0-alpine
 
 COPY Gemfile /app/
 WORKDIR /app
