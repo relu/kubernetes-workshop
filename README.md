@@ -608,7 +608,9 @@ kubectl get svc
 - **NodePort**: Exposes the service on each node's IP at a static port, accessible from outside the cluster
 - **LoadBalancer**: Provisions a cloud provider's load balancer (not applicable for local Kind clusters)
 
-Our service is type `NodePort`, which creates a high-numbered port (30000-32767) on the host.
+Our service is type `NodePort`, which reserves a high-numbered port (30000-32767) on every node in the cluster.
+
+**Heads up for Kind users**: The NodePort is opened on the Kind node (a Docker container), not automatically on your laptop. Our Kind cluster only forwards ports `30080` and `30443` from the container to your host (see `manifests/00-kind-config.yaml`), and the port kubectl assigned to this service is random — so you won't be able to reach it directly at `http://localhost:<node-port>`. We'll use `kubectl port-forward` below to test the service, and later (in the Ingress module) we'll get proper external access through port 30080.
 
 #### Understand how services find pods
 
@@ -778,6 +780,19 @@ A Deployment is a higher-level controller that manages ReplicaSets. It provides:
 - [Performing a Rolling Update](https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/) - Interactive tutorial
 - [Deployment Strategies](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy) - Rolling update vs recreate
 
+#### Clean up the standalone ReplicaSet first
+
+Before we create the Deployment, we need to remove the ReplicaSet we made in the previous module. Here's why:
+
+- A Deployment creates its **own** ReplicaSet (with a generated name like `web-app-7c9d8b6f5f`). It does **not** take ownership of ReplicaSets you created by hand.
+- Both the old ReplicaSet and the new one would match pods with `app: web-app`, so they'd fight each other — the old RS would keep trying to maintain 3 pods while the new one adds its own, leading to extra pods and constant churn.
+
+Delete the standalone ReplicaSet (its pods will be cleaned up automatically):
+
+```bash
+kubectl delete rs web-app
+```
+
 #### Create a deployment
 
 ```bash
@@ -802,14 +817,13 @@ kubectl get deployments -o wide
 kubectl get rs
 ```
 
-Our previously created ReplicaSet has now been "adopted" by the Deployment.
-
+You should see a new ReplicaSet with a name like `web-app-<random-suffix>`. That suffix is a hash of the pod template — the Deployment uses it to tell its ReplicaSets apart across revisions.
 
 ```bash
 kubectl get pod
 ```
 
-The pods remain at 3 because the Deployment's selector matches the existing pods, preventing the creation of duplicates.
+You should see 3 pods, each with names matching the new ReplicaSet's prefix. The Deployment rolled out 3 fresh pods to replace the ones from the standalone ReplicaSet we deleted.
 
 #### Understand the hierarchy
 
@@ -1477,7 +1491,7 @@ watch kubectl top pod
 kubectl exec -ti <pod-name> -- sh -c 'i=0; while [ $i -lt 200 ]; do dd if=/dev/zero of=/dev/shm/fill bs=1M count=1 seek=$i 2>/dev/null; i=$((i+5)); sleep 1; done'
 ```
 
-This gradually writes 5MB at a time with a 1-second pause between writes. Watch Terminal 1 - you'll see memory usage climb until the pod hits the 100Mi limit and gets killed.
+This gradually writes 5MB at a time with a 1-second pause between writes (tmpfs usage counts against the container's memory limit). Watch Terminal 1 - you'll see memory usage climb until the pod hits the 100Mi limit set in `manifests/06-deployment-with-resources.yaml` and gets killed.
 
 After the pod is killed, check its status:
 
@@ -2348,20 +2362,6 @@ kubectl patch deployment metrics-server -n kube-system --type='json' \
   -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--kubelet-insecure-tls"}]'
 ```
 
-### Dashboard access issues
-
-**Symptoms**: Can't access dashboard or authentication fails
-
-**Common causes**:
-- Token expired (valid for 1 hour)
-- kubectl proxy not running
-- Wrong URL
-
-**Fix**: Generate a new token:
-```bash
-kubectl -n kubernetes-dashboard create token admin-user
-```
-
 ### Helm installation fails
 
 **Symptoms**: `helm install` returns errors
@@ -2444,6 +2444,28 @@ kind get clusters
 # Check contexts (the workshop context should be gone)
 kubectl config get-contexts
 ```
+
+### Remove host-based routing entries (if you added them)
+
+If you followed the **Host-based routing** step in module 6, you added entries to your hosts file. They'll keep pointing to `127.0.0.1` even after the cluster is gone, so it's worth removing them.
+
+**On Linux/Mac**:
+```bash
+sudo nano /etc/hosts
+```
+
+**On Windows** (as Administrator): edit `C:\Windows\System32\drivers\etc\hosts`.
+
+Delete the lines you added:
+```
+127.0.0.1 ruby.local
+127.0.0.1 python.local
+127.0.0.1 go.local
+127.0.0.1 rust.local
+127.0.0.1 app.local
+```
+
+Save and exit.
 
 ### Stop container runtime (Optional)
 
