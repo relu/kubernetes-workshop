@@ -384,7 +384,7 @@ kubectl create namespace workshop
 kubectl get ns
 ```
 
-**Expected output**: You should see your `workshop` namespace with status "Active", along with system namespaces like `default`, `kube-system`, and `kube-public`.
+**Expected output**: You should see your `workshop` namespace with status "Active", along with system namespaces like `default`, `kube-system`, and `kube-public`. You may also see a `local-path-storage` namespace — this is normal for Kind clusters and provides built-in local storage support.
 
 **Note**: `ns` is a short name (alias) for `namespaces`. Kubernetes provides these shortcuts to save typing. Other examples: `po` for pods, `svc` for services, `deploy` for deployments.
 
@@ -885,6 +885,8 @@ kubectl rollout history deployment web-app
 
 This shows all revisions of your deployment. Each update creates a new revision.
 
+**Note**: The `CHANGE-CAUSE` column will show `<none>` for all revisions — this is expected. The `--record` flag that used to populate it was deprecated and removed from kubectl. To add a change cause manually, annotate the deployment after an update: `kubectl annotate deployment web-app kubernetes.io/change-cause="updated to python"`.
+
 **Understanding revision history**: Kubernetes keeps the old ReplicaSets around (scaled to 0 replicas) to enable rollbacks. The `revisionHistoryLimit` field in the deployment spec controls how many old ReplicaSets to keep. We've set it to 10 in our manifests, meaning you can rollback through the last 10 changes. When you exceed this limit, the oldest revisions are automatically deleted.
 
 You can view detailed information about a specific revision:
@@ -1046,7 +1048,7 @@ kubectl apply -f manifests/05-ingress.yaml
 kubectl get ingress
 ```
 
-**Expected output**: You should see an ingress named `web-app` with a host of `*` (matches any hostname).
+**Expected output**: You should see an ingress named `web-app` with a host of `*` (matches any hostname). The `ADDRESS` column will be empty — this is normal for Kind clusters using Traefik with hostPort bindings. The application is still accessible at `http://localhost:30080`.
 
 For more details:
 
@@ -1297,7 +1299,7 @@ If a container crashed and restarted, you can view the previous container's logs
 kubectl logs <pod-name> --previous
 ```
 
-This is crucial for debugging crash loops.
+This is crucial for debugging crash loops. **Note**: If the container hasn't crashed yet, this returns an error (`previous terminated container not found`) — that's expected. Try it after the optional OOMKilled demo in Module 8, which causes a real crash.
 
 #### Logs from multi-container pods
 
@@ -1486,12 +1488,12 @@ If you want to see OOMKilled in action, you can force a pod to exceed its memory
 watch kubectl top pod
 ```
 
-**Terminal 2** - Gradually allocate memory (the `/dev/shm` directory is a tmpfs filesystem that lives in RAM):
+**Terminal 2** - Gradually allocate memory in the Ruby process (10MB per second):
 ```bash
-kubectl exec -ti <pod-name> -- sh -c 'i=0; while [ $i -lt 200 ]; do dd if=/dev/zero of=/dev/shm/fill bs=1M count=1 seek=$i 2>/dev/null; i=$((i+5)); sleep 1; done'
+kubectl exec -ti <pod-name> -- ruby -e 'a=[]; loop { a << " " * 10_000_000; sleep 1 }'
 ```
 
-This gradually writes 5MB at a time with a 1-second pause between writes (tmpfs usage counts against the container's memory limit). Watch Terminal 1 - you'll see memory usage climb until the pod hits the 100Mi limit set in `manifests/06-deployment-with-resources.yaml` and gets killed.
+This allocates ~10MB per second directly in the Ruby process heap. Watch Terminal 1 — you'll see memory usage climb until the pod hits the 100Mi limit set in `manifests/06-deployment-with-resources.yaml` and gets killed (after about 8–10 seconds).
 
 After the pod is killed, check its status:
 
@@ -1628,7 +1630,7 @@ kubectl exec -ti deployment/web-app -- sh
 Inside the pod, check environment variables:
 
 ```sh
-env | grep -E 'OTHER_NAME|NAME|ENV_VAR'
+env | grep -E '^(OTHER_NAME|NAME|ENV_VAR)='
 ```
 
 Check the mounted configuration file:
@@ -2169,6 +2171,8 @@ helm dependency update ./helm/example-app
 # List dependencies
 helm dependency list ./helm/example-app
 ```
+
+**Note**: If you have other Helm repositories configured, `helm dependency update` may print errors for any that are unreachable. This is fine — as long as the `valkey` dependency shows `STATUS: ok` in `helm dependency list`, the download succeeded.
 
 #### Helm repositories
 
