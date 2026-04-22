@@ -1,0 +1,33 @@
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Claude Code (local session/state, per-user)
+# Ignore everything under .claude/ except repo-shared skills
+.claude/*
+!.claude/skills/
+
+# Backup files
+*.bak
+*~
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+/tmp/
+
+# Kubeconfig
+kubeconfig*
+!manifests/00-kind-config.yaml
+
+# Helm
+*.tgz
+helm/example-app/charts/
+
+# Verification artifacts (generated locally by verify-workshop skill)
+verification/
