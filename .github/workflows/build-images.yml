@@ -51,7 +51,7 @@ jobs:
             type=sha,prefix=,format=short
 
       - name: Build and push Python image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./apps/python
           platforms: linux/amd64,linux/arm64
@@ -90,7 +90,7 @@ jobs:
             type=sha,prefix=,format=short
 
       - name: Build and push Ruby image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./apps/ruby
           platforms: linux/amd64,linux/arm64
@@ -129,7 +129,7 @@ jobs:
             type=sha,prefix=,format=short
 
       - name: Build and push Go image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./apps/go
           platforms: linux/amd64,linux/arm64
@@ -168,7 +168,7 @@ jobs:
             type=sha,prefix=,format=short
 
       - name: Build and push Rust image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: ./apps/rust
           platforms: linux/amd64,linux/arm64
